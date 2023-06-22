@@ -1,25 +1,51 @@
-import logo from './logo.svg';
-import './App.css';
-
+import { useState, useEffect } from "react";
+import "./App.css";
+import DView from "./view/DesktopView/DView";
+import PView from "./view/PhoneView/PView";
+import PNotesArea from "./components/Phone/PNotesArea";
+import { BrowserRouter, Route, Routes } from "react-router-dom";
 function App() {
-  return (
-    <div className="App">
-      <header className="App-header">
-        <img src={logo} className="App-logo" alt="logo" />
-        <p>
-          Edit <code>src/App.js</code> and save to reload.
-        </p>
-        <a
-          className="App-link"
-          href="https://reactjs.org"
-          target="_blank"
-          rel="noopener noreferrer"
-        >
-          Learn React
-        </a>
-      </header>
-    </div>
-  );
+	const [dimension, setDimension] = useState(window.innerWidth);
+	const [selected, setSelected] = useState("");
+	const [notes, setNotes] = useState([]);
+
+	useEffect(() => {
+		setSelected(localStorage.getItem("selected") || "");
+	}, [selected]);
+
+	const checkDimension = () => {
+		setDimension(window.innerWidth);
+	};
+
+	window.addEventListener("resize", checkDimension);
+
+	return (
+		<div className="App">
+			{dimension > 500 ? (
+				<DView />
+			) : (
+				<BrowserRouter>
+					<Routes>
+						<Route
+							path="/"
+							element={<PView selected={selected} setSelected={setSelected} />}
+						/>
+						<Route
+							path="/notes"
+							element={
+								<PNotesArea
+									selected={selected}
+									setSelected={setSelected}
+									notes={notes}
+									setNotes={setNotes}
+								/>
+							}
+						/>
+					</Routes>
+				</BrowserRouter>
+			)}
+		</div>
+	);
 }
 
 export default App;
